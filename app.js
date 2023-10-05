@@ -1,25 +1,30 @@
-const path =require('path');
 
+// app.js
+const path = require('path'); 
 const express = require('express');
-const fs = require('fs');
-const bodyParser=require('body-parser');
-const cookieParser = require('cookie-parser');
+
+
+const bodyParser = require('body-parser');
+const sequelize = require('./util/database');
+const productRoutes = require('./routes/productRoutes');
+const rootDir=require('./util/path');
+
 const app = express();
 
-
-
-const adminRoutes=require('./routes/admin1');
-const homeRoutes=require('./routes/contact');
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(express.static(path.join(__dirname,'public')));
 
-app.use(adminRoutes);
-app.use(homeRoutes);
-const rootDir=require('./util/path');
-app.use((req,res,next)=>{
-    res.status(404).sendFile(path.join(rootDir,'view','404.html'));
+app.use(productRoutes);
+
+sequelize.sync().then(() => {
+  console.log('Database & tables created!');
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
 });
 
 
-app.listen(3000);
+ 
+
+
